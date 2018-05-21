@@ -6,9 +6,8 @@
  * Time: 17:32
  */
 
-namespace Equinox\Services\Data;
+namespace Equinox\Services\Capsule;
 
-use Carbon\Carbon;
 use Equinox\Definitions\LoggerDefinitions;
 use Equinox\Factories\CapsuleFactory;
 use Equinox\Models\Capsule\Capsule;
@@ -20,17 +19,15 @@ use Equinox\Services\General\DebuggingService;
 use Equinox\Services\General\LoggerService;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 
 /**
- * Class CapsuleService
- * @package Equinox\Services\Structure
+ * Class CapsuleSaveService
+ * @package Equinox\Services\Capsule
  */
-class CapsuleService extends BaseService
+class CapsuleSaveService extends BaseService
 {
-
     /**
      * The capsule factory
      * @var CapsuleFactory
@@ -45,14 +42,14 @@ class CapsuleService extends BaseService
 
     /**
      * CapsuleService constructor.
-     * @param CapsuleFactory $capsuleFactory
+     * @param CapsuleFactory $capsuleGenerateFactory
      * @param CapsuleRepository $capsuleRepository
      * @param LoggerService $loggerService
      * @param DebuggingService $debuggingService
      * @param Config $config
      */
     public function __construct(
-        CapsuleFactory $capsuleFactory,
+        CapsuleFactory $capsuleGenerateFactory,
         CapsuleRepository $capsuleRepository,
         LoggerService $loggerService,
         DebuggingService $debuggingService,
@@ -60,102 +57,17 @@ class CapsuleService extends BaseService
     ) {
         parent::__construct($loggerService, $debuggingService, $config);
 
-        $this->capsuleFactory = $capsuleFactory;
+        $this->capsuleFactory = $capsuleGenerateFactory;
         $this->capsuleRepository = $capsuleRepository;
-    }
-
-    /**
-     * Function used to create all defined capsules given reference date
-     * @param Carbon $referenceDate
-     * @return Collection
-     */
-    public function createCapsulesByReferenceDate(Carbon $referenceDate): Collection
-    {
-        $startTime = $this->debuggingService->startTimer();
-
-        $capsules = collect();
-
-        $capsulesConfig = $this->getDefinedCapsulesConfig();
-        $aggregatesConfig = $this->getDefinedAggregatesConfig();
-
-        foreach ($capsulesConfig as $capsuleConfig) {
-            foreach ($aggregatesConfig as $aggregateConfig) {
-                $capsule = $this->createOneCapsule(
-                    $capsuleConfig,
-                    $aggregateConfig,
-                    $referenceDate
-                );
-
-                $capsules->push($capsule);
-            }
-        }
-
-        $elapsed = $this->debuggingService->endTimer($startTime);
-        $this->loggerService->debugTimer($elapsed, "Create capsule");
-
-        return $capsules;
-    }
-
-    /**
-     * Short function used to build a capsule
-     * @param array $capsuleConfig
-     * @param array $aggregateConfig
-     * @param Carbon $referenceDate
-     * @return Capsule
-     */
-    public function createOneCapsule(
-        array $capsuleConfig,
-        array $aggregateConfig,
-        Carbon $referenceDate
-    ): Capsule {
-        return $this->capsuleFactory->build(
-            $capsuleConfig['capsule_elasticity'],
-            $capsuleConfig['interval_elasticity'],
-            $referenceDate,
-            $aggregateConfig['aggregate_key']
-        );
-    }
-
-    /**
-     * Function used to retrieve the defined capsules config
-     * @return array
-     */
-    protected function getDefinedCapsulesConfig(): array
-    {
-        return $this->config->get('capsule.defined_capsules');
-    }
-
-    /**
-     * Function used to retrieve the defined aggregates config
-     * @return array
-     */
-    protected function getDefinedAggregatesConfig(): array
-    {
-        return array_merge(
-            $this->config->get('aggregates.interval_column_aggregates'),
-            $this->config->get('aggregates.interval_column_meta_aggregates')
-        );
-    }
-
-    /**
-     * Helper function used to generate multiple capsules
-     * @param Collection $capsules
-     * @return CapsuleService
-     */
-    public function generateCapsules(Collection $capsules): self
-    {
-        $capsules->map([$this, 'generateCapsule']);
-
-        return $this;
     }
 
     /**
      * Function used to generate a new storage
      * @param Capsule $capsule
-     * @return CapsuleService
+     * @return CapsuleSaveService
      * @throws \Exception
      */
-    public function generateCapsule(Capsule $capsule): self
+    public function saveCapsule(Capsule $capsule): self
     {
         $this->loggerService->debug("Creating capsule " . $capsule->capsuleId);
 
@@ -219,7 +131,7 @@ class CapsuleService extends BaseService
     /**
      * Short function used to drop a capsule
      * @param string $capsuleName
-     * @return CapsuleService
+     * @return CapsuleSaveService
      */
     public function dropCapsule(string $capsuleName): self
     {

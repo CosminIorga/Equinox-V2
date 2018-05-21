@@ -3,8 +3,8 @@
 namespace Equinox\Console\Commands;
 
 use Carbon\Carbon;
-use Equinox\Events\RequestCapsuleSave;
-use Equinox\Services\Data\CapsuleService;
+use Equinox\Events\RequestCapsuleGenerate;
+use Equinox\Events\RequestDataMap;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +15,7 @@ class Test extends Command
      *
      * @var string
      */
-    protected $signature = 'equinox:test';
+    protected $signature = 'equinox:test {action}';
 
     /**
      * The console command description.
@@ -37,27 +37,32 @@ class Test extends Command
      */
     public function handle()
     {
-//        $this->testInsert();
-//
-//        return;
-
-        try {
-            /** @var CapsuleService $capsuleService */
-            $capsuleService = app(CapsuleService::class);
-
-            $referenceDate = new Carbon();
-            $capsules = $capsuleService->createCapsulesByReferenceDate($referenceDate);
-
-            dump("Sending event");
-
-            foreach ($capsules as $capsule) {
-                event(new RequestCapsuleSave($capsule));
-            }
-
-            //$dataService->generateCapsules($capsules);
-        } catch (\Exception $exception) {
-            dump($exception);
+        switch ($this->argument('action')) {
+            case "create":
+                $this->testCreate();
+                break;
+            case "insert":
+                $this->testInsertRep();
+                break;
+            default:
+                throw new \Exception("unknown argument");
         }
+    }
+
+    protected function testCreate()
+    {
+        /* Start timer for performance benchmarks */
+        $startTime = microtime(true);
+
+        $referenceDate = new Carbon();
+
+        event(new RequestCapsuleGenerate($referenceDate));
+
+        /* Compute total operations time */
+        $endTime = microtime(true);
+        $elapsed = $endTime - $startTime;
+
+        echo "Elapsed: $elapsed" . PHP_EOL;
     }
 
     protected function testInsert()
@@ -106,8 +111,30 @@ class Test extends Command
 
     protected function testInsertRep()
     {
+        $data = [];
 
+        foreach (range(0, 5000) as $index) {
+            $data[] = [
+                'id' => $index,
+                'start_date' => '2018-05-0' . ($index % 5),
+                'client' => "CL_a",
+                "carrier" => "CR_a",
+                "destination" => "D_a",
+                "duration" => 20,
+                "cost" => 0.23,
+            ];
+        }
 
+        /* Start timer for performance benchmarks */
+        $startTime = microtime(true);
+
+        event(new RequestDataMap($data));
+
+        /* Compute total operations time */
+        $endTime = microtime(true);
+        $elapsed = $endTime - $startTime;
+
+        echo "Elapsed: $elapsed" . PHP_EOL;
     }
 
 }

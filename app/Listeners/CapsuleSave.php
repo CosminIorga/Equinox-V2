@@ -3,10 +3,10 @@
 namespace Equinox\Listeners;
 
 use Equinox\Events\RequestCapsuleSave;
-use Equinox\Services\Data\CapsuleService;
+use Equinox\Services\Capsule\CapsuleSaveService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SaveCapsule implements ShouldQueue
+class CapsuleSave implements ShouldQueue
 {
 
     /**
@@ -14,22 +14,22 @@ class SaveCapsule implements ShouldQueue
      *
      * @var string|null
      */
-    public $queue = 'saveCapsule';
+    public $queue = 'capsule:save';
 
     /**
      * The capsule service
-     * @var CapsuleService
+     * @var CapsuleSaveService
      */
-    protected $capsuleService;
+    protected $capsuleSaveService;
 
     /**
      * Create the event listener.
-     * @param CapsuleService $capsuleService
+     * @param CapsuleSaveService $capsuleSaveService
      */
     public function __construct(
-        CapsuleService $capsuleService
+        CapsuleSaveService $capsuleSaveService
     ) {
-        $this->capsuleService = $capsuleService;
+        $this->capsuleSaveService = $capsuleSaveService;
     }
 
     /**
@@ -41,7 +41,7 @@ class SaveCapsule implements ShouldQueue
     public function handle(RequestCapsuleSave $event)
     {
         try {
-            $this->capsuleService->generateCapsule($event->getCapsule());
+            $this->capsuleSaveService->saveCapsule($event->getCapsule());
         } catch (\Exception $exception) {
             dump($exception->getMessage());
         }

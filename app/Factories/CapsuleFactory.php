@@ -11,6 +11,7 @@ namespace Equinox\Factories;
 
 use Carbon\Carbon;
 use Equinox\Models\Capsule\Capsule;
+use Illuminate\Support\Facades\Cache;
 
 class CapsuleFactory
 {
@@ -21,13 +22,21 @@ class CapsuleFactory
     protected $columnFactory;
 
     /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * CapsuleFactory constructor.
+     * @param Cache $cache
      * @param ColumnFactory $columnFactory
      */
     public function __construct(
+        Cache $cache,
         ColumnFactory $columnFactory
     ) {
         $this->columnFactory = $columnFactory;
+        $this->cache = $cache;
     }
 
     /**

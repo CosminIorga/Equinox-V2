@@ -73,6 +73,9 @@ return [
             'connection' => 'default',
         ],
 
+        'capsules' => [
+            'driver' => 'array'
+        ]
     ],
 
     /*

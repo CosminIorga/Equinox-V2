@@ -12,7 +12,6 @@ namespace Equinox\Exceptions;
  * Class ModelException
  * @package Equinox\Exceptions
  */
-class ModelException extends Exception
+class Exception extends DefaultException
 {
-    const UNDEFINED_CAPSULE_ELASTICITY = 'Undefined capsule elasticity';
 }

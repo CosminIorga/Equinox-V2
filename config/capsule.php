@@ -9,7 +9,7 @@
 return [
     'defined_capsules' => [
         [
-            'interval_elasticity' => 60,
+            'interval_elasticity' => 720,
             'capsule_elasticity' => 'daily',
         ]
     ],

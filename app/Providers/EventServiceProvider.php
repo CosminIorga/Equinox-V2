@@ -2,7 +2,6 @@
 
 namespace Equinox\Providers;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -13,11 +12,17 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Equinox\Events\RequestCapsuleGeneration' => [
-            'Equinox\Listeners\GenerateCapsule',
+        'Equinox\Events\RequestCapsuleGenerate' => [
+            'Equinox\Listeners\CapsuleGenerate',
         ],
         'Equinox\Events\RequestCapsuleSave' => [
-            'Equinox\Listeners\SaveCapsule',
+            'Equinox\Listeners\CapsuleSave',
+        ],
+        'Equinox\Events\RequestDataMap' => [
+            'Equinox\Listeners\DataMap',
+        ],
+        'Equinox\Events\RequestDataModify' => [
+            'Equinox\Listeners\DataModify',
         ],
     ];
 

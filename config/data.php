@@ -20,15 +20,15 @@ return [
     'pivot_keys' => [
         'client' => [
             'input_name' => 'client',
-            'output_name' => 'client',
+            'output_name' => 'client_x',
         ],
         'carrier' => [
             'input_name' => 'carrier',
-            'output_name' => 'carrier',
+            'output_name' => 'carrier_x',
         ],
         'destination' => [
             'input_name' => 'destination',
-            'output_name' => 'destination',
+            'output_name' => 'destination_x',
         ],
     ],
 
@@ -52,7 +52,7 @@ return [
     'interval_column_aggregates' => [
         'interval_duration' => [
             'input_name' => 'duration',
-            'aggregate_key' => 'interval_duration',
+            'output_name' => 'interval_duration',
             'input_function' => 'sum',
             'output_functions' => [
                 'sum',
@@ -65,7 +65,7 @@ return [
         ],
         'interval_cost' => [
             'input_name' => 'cost',
-            'aggregate_key' => 'interval_cost',
+            'output_name' => 'interval_cost',
             'input_function' => 'sum',
             'output_functions' => [
                 'sum',
@@ -78,7 +78,7 @@ return [
         ],
 /*        'interval_records' => [
             'input_name' => null,
-            'aggregate_key' => 'interval_records',
+            'output_name' => 'interval_records',
             'input_function' => 'count',
             'output_functions' => [
                 'sum',
@@ -88,7 +88,7 @@ return [
         ],
         'interval_full_records' => [
             'input_name' => 'is_full_record',
-            'aggregate_key' => 'interval_full_records',
+            'output_name' => 'interval_full_records',
             'input_function' => 'count',
             'output_functions' => [
                 'sum',
@@ -102,7 +102,7 @@ return [
     'interval_column_meta_aggregates' => [
         'meta_record_count' => [
             'input_name' => null,
-            'aggregate_key' => 'meta_record_count',
+            'output_name' => 'meta_record_count',
             'input_function' => 'count',
             'output_functions' => [
                 'sum',

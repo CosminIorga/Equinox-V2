@@ -35,4 +35,26 @@ class Config
 
         return $value;
     }
+
+    /**
+     * Function used to retrieve the defined capsules config
+     * @return array
+     */
+    public function getDefinedCapsulesConfig(): array
+    {
+        return $this->get('capsule.defined_capsules');
+    }
+
+    /**
+     * Function used to retrieve the defined aggregates config
+     * @return array
+     */
+    public function getDefinedAggregatesConfig(): array
+    {
+        return array_merge(
+            $this->get('data.interval_column_aggregates'),
+            $this->get('data.interval_column_meta_aggregates')
+        );
+    }
+
 }

@@ -12,7 +12,7 @@ namespace Equinox\Exceptions;
  * Class ModelException
  * @package Equinox\Exceptions
  */
-class FactoryException extends DefaultException
+class FactoryException extends Exception
 {
     const INVALID_COLUMN_TYPE_RECEIVED = 'Invalid column type received';
 }

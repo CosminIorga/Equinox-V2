@@ -12,7 +12,7 @@ namespace Equinox\Exceptions;
  * Class ModelException
  * @package Equinox\Exceptions
  */
-class ValidationException extends DefaultException
+class ValidationException extends Exception
 {
     const VALIDATION_FAILED = 'Validation failed';
 }

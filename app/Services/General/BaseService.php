@@ -35,17 +35,17 @@ abstract class BaseService
 
     /**
      * BaseService constructor.
-     * @param LoggerService $loggerService
+     * @param LoggerService $loggerGenerateService
      * @param DebuggingService $debuggingService
      * @param Config $config
      */
     public function __construct(
-        LoggerService $loggerService,
+        LoggerService $loggerGenerateService,
         DebuggingService $debuggingService,
         Config $config
     ) {
         /* Instantiate fields */
-        $this->loggerService = $loggerService;
+        $this->loggerService = $loggerGenerateService;
         $this->debuggingService = $debuggingService;
         $this->config = $config;
 

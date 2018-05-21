@@ -2,26 +2,28 @@
 
 namespace Equinox\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
-class RequestCapsuleGeneration
+class RequestDataModify
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new event instance.
-     *
-     * @return void
+     * The array containing data to modify
+     * @var array
      */
-    public function __construct()
+    protected $mapping;
+
+    /**
+     * Create a new event instance.
+     * @param array $mapping
+     */
+    public function __construct(array $mapping)
     {
-        //
+        $this->mapping = $mapping;
     }
 
     /**
@@ -33,4 +35,14 @@ class RequestCapsuleGeneration
     {
         return new PrivateChannel('channel-name');
     }
+
+    /**
+     * Mapping getter
+     * @return array
+     */
+    public function getMapping(): array
+    {
+        return $this->mapping;
+    }
+
 }
