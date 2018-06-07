@@ -109,7 +109,11 @@ class Column extends NonPersistentModel
             'name' => 'required|string',
             'data_type' => Rule::in(ColumnsDefinitions::DATA_TYPES),
             'extra' => 'nullable|array',
-            'index' => ['nullable', 'string', Rule::in(ColumnsDefinitions::INDEXES)],
+            'index' => [
+                'nullable',
+                'string',
+                Rule::in(ColumnsDefinitions::INDEXES)
+            ],
             'allow_null' => 'required|boolean',
         ];
     }
@@ -179,6 +183,15 @@ class Column extends NonPersistentModel
     public function getIndexAttribute()
     {
         return $this->config['index'];
+    }
+
+    /**
+     * Getter for type attribute
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     /**

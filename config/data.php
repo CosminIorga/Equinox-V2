@@ -18,15 +18,15 @@ return [
      * Pivot keys ... TODO: Explain
      */
     'pivot_keys' => [
-        'client' => [
+        'client_x' => [
             'input_name' => 'client',
             'output_name' => 'client_x',
         ],
-        'carrier' => [
+        'carrier_x' => [
             'input_name' => 'carrier',
             'output_name' => 'carrier_x',
         ],
-        'destination' => [
+        'destination_x' => [
             'input_name' => 'destination',
             'output_name' => 'destination_x',
         ],

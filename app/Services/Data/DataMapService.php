@@ -175,12 +175,9 @@ class DataMapService extends BaseService
      */
     protected function computeDataToMap(array $recordComponents, $recordAggregateName): array
     {
-        $dataToMap = $recordComponents;
-        $dataToMap['aggregates'] = [
-            $recordAggregateName => $dataToMap['aggregates'][$recordAggregateName],
-        ];
+        $recordComponents['aggregate_value'] = $recordComponents['aggregates'][$recordAggregateName];
 
-        return $dataToMap;
+        return $recordComponents;
     }
 
     /**
@@ -204,7 +201,7 @@ class DataMapService extends BaseService
                 $definedCapsuleConfig,
                 $aggregatesConfig,
                 $recordComponents['timestamp_key']
-            )->toArray();
+            );
         }
 
         $mapping[$uniqueCapsuleID]['records'][] = $recordComponents;

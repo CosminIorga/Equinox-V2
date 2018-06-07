@@ -3,6 +3,7 @@
 namespace Equinox\Listeners;
 
 use Equinox\Events\RequestDataModify;
+use Equinox\Services\Data\DataModifyService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class DataModify implements ShouldQueue
@@ -15,13 +16,19 @@ class DataModify implements ShouldQueue
     public $queue = 'data:modify';
 
     /**
-     * Create the event listener.
-     *
-     * @return void
+     * The DataModify Service
+     * @var DataModifyService
      */
-    public function __construct()
-    {
-        //
+    protected $dataModifyService;
+
+    /**
+     * Create the event listener.
+     * @param DataModifyService $dataModifyService
+     */
+    public function __construct(
+        DataModifyService $dataModifyService
+    ) {
+        $this->dataModifyService = $dataModifyService;
     }
 
     /**
@@ -32,6 +39,10 @@ class DataModify implements ShouldQueue
      */
     public function handle(RequestDataModify $event)
     {
-        //dump($event->getMapping());
+        try {
+            $this->dataModifyService->modifyRecords($event->getMapping());
+        } catch (\Exception $exception) {
+            dump($exception->getMessage());
+        }
     }
 }

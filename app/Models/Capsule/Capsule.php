@@ -12,8 +12,11 @@ namespace Equinox\Models\Capsule;
 use Carbon\Carbon;
 use Equinox\Exceptions\ModelException;
 use Equinox\Factories\ColumnFactory;
+use Equinox\Factories\RecordFactory;
 use Equinox\Models\Capsule\Modules\ColumnsModule;
+use Equinox\Models\Capsule\Modules\RecordsModule;
 use Equinox\Models\NonPersistentModel;
+use Equinox\Services\General\Config;
 use Illuminate\Support\Collection;
 
 /**
@@ -25,6 +28,7 @@ use Illuminate\Support\Collection;
 class Capsule extends NonPersistentModel
 {
     use ColumnsModule;
+    use RecordsModule;
 
     /**
      * The capsule elasticity
@@ -63,10 +67,28 @@ class Capsule extends NonPersistentModel
     protected $intervalColumnsCount;
 
     /**
+     * The base reference date from which the capsule will start to save information
+     * @var Carbon
+     */
+    protected $baseReferenceDate;
+
+    /**
      * The column factory
      * @var ColumnFactory
      */
     protected $columnFactory;
+
+    /**
+     * The record factory
+     * @var RecordFactory
+     */
+    protected $recordFactory;
+
+    /**
+     * The config service
+     * @var Config
+     */
+    protected $config;
 
     /**
      * Capsule constructor.
@@ -74,14 +96,18 @@ class Capsule extends NonPersistentModel
      * @param string $intervalElasticity
      * @param Carbon $referenceDate
      * @param string $aggregateName
+     * @param Config $config
      * @param ColumnFactory $columnFactory
+     * @param RecordFactory $recordFactory
      */
     public function __construct(
         string $capsuleElasticity,
         string $intervalElasticity,
         Carbon $referenceDate,
         string $aggregateName,
-        ColumnFactory $columnFactory
+        Config $config,
+        ColumnFactory $columnFactory,
+        RecordFactory $recordFactory
     ) {
         $this->capsuleElasticity = $capsuleElasticity;
         $this->intervalElasticity = $intervalElasticity;
@@ -89,6 +115,9 @@ class Capsule extends NonPersistentModel
         $this->aggregateName = $aggregateName;
 
         $this->columnFactory = $columnFactory;
+        $this->recordFactory = $recordFactory;
+
+        $this->config = $config;
 
         $this->bootstrap();
     }
@@ -99,6 +128,7 @@ class Capsule extends NonPersistentModel
     protected function bootstrap()
     {
         $this->computeCapsuleId()
+            ->computeBaseReferenceDate()
             ->computeIntervalColumnsCount()
             ->computeColumns();
     }
@@ -115,6 +145,33 @@ class Capsule extends NonPersistentModel
             $this->aggregateName,
             $this->capsuleElasticity
         );
+
+        return $this;
+    }
+
+    /**
+     * Funtion used to compute the base reference date
+     * @return Capsule
+     * @throws ModelException
+     */
+    protected function computeBaseReferenceDate(): self
+    {
+        switch ($this->capsuleElasticity) {
+            case "daily":
+                $this->baseReferenceDate = clone $this->referenceDate;
+
+                $this->baseReferenceDate->setTime(0, 0, 0);
+                break;
+            case "weekly":
+            case "monthly":
+                //TODO: take referenceDate into consideration and check how many minutes the month has
+                $this->baseReferenceDate = clone $this->referenceDate;
+                break;
+            default:
+                throw new ModelException(ModelException::UNDEFINED_CAPSULE_ELASTICITY, [
+                    'capsuleElasticity' => $this->capsuleElasticity,
+                ]);
+        }
 
         return $this;
     }
@@ -161,6 +218,25 @@ class Capsule extends NonPersistentModel
             'intervalColumnCount' => $this->intervalColumnsCount,
             'columns' => $this->columns->toArray(),
         ];
+    }
+
+    /**
+     * Function used to determine intervalColumn name given reference date
+     * @param Carbon $recordDate
+     * @return string
+     */
+    public function getColumnNameByReferenceDate(Carbon $recordDate): string
+    {
+        /* Compute minutes between Capsule baseReferenceDate and given recordDate */
+        $minutesBetweenDates = $this->baseReferenceDate->diffInMinutes($recordDate);
+
+        /* Divide by intervalElasticity to determine columnIndex in which data should reside */
+        $columnIndex = floor($minutesBetweenDates / $this->intervalElasticity);
+
+        /* Get intervalColumnNamePattern */
+        $intervalColumnNamePattern = $this->config->get('capsule.columns.interval_column_template.pattern');
+
+        return $this->computeIntervalColumnName($columnIndex, $intervalColumnNamePattern);
     }
 
     /**

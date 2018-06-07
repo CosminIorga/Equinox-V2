@@ -11,6 +11,7 @@ namespace Equinox\Factories;
 
 use Carbon\Carbon;
 use Equinox\Models\Capsule\Capsule;
+use Equinox\Services\General\Config;
 use Illuminate\Support\Facades\Cache;
 
 class CapsuleFactory
@@ -22,21 +23,40 @@ class CapsuleFactory
     protected $columnFactory;
 
     /**
+     * The record factory
+     * @var RecordFactory
+     */
+    protected $recordFactory;
+
+    /**
+     * The Cache Service
      * @var Cache
      */
     protected $cache;
 
     /**
+     * The Config Service
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * CapsuleFactory constructor.
      * @param Cache $cache
+     * @param Config $config
      * @param ColumnFactory $columnFactory
+     * @param RecordFactory $recordFactory
      */
     public function __construct(
         Cache $cache,
-        ColumnFactory $columnFactory
+        Config $config,
+        ColumnFactory $columnFactory,
+        RecordFactory $recordFactory
     ) {
         $this->columnFactory = $columnFactory;
         $this->cache = $cache;
+        $this->config = $config;
+        $this->recordFactory = $recordFactory;
     }
 
     /**
@@ -58,7 +78,9 @@ class CapsuleFactory
             $intervalElasticity,
             $referenceDate,
             $aggregateName,
-            $this->columnFactory
+            $this->config,
+            $this->columnFactory,
+            $this->recordFactory
         );
     }
 }

@@ -9,9 +9,9 @@
 return [
     'defined_capsules' => [
         [
-            'interval_elasticity' => 720,
+            'interval_elasticity' => 60,
             'capsule_elasticity' => 'daily',
-        ]
+        ],
     ],
 
     'columns' => [
@@ -39,8 +39,8 @@ return [
          * All pivot columns will be used in a unique index as to better enforce the reporting algorithm
          */
         'pivot_columns' => [
-            'client' => [
-                'name' => 'client',
+            'client_x' => [
+                'name' => 'client_x',
                 'data_type' => 'string',
                 'extra' => [
                     'length' => 255,
@@ -48,8 +48,8 @@ return [
                 'index' => 'index', //recommended
                 'allow_null' => false //recommended
             ],
-            'carrier' => [
-                'name' => 'carrier',
+            'carrier_x' => [
+                'name' => 'carrier_x',
                 'data_type' => 'string',
                 'extra' => [
                     'length' => 255,
@@ -57,8 +57,8 @@ return [
                 'index' => 'index', //recommended
                 'allow_null' => false //recommended
             ],
-            'destination' => [
-                'name' => 'destination',
+            'destination_x' => [
+                'name' => 'destination_x',
                 'data_type' => 'string',
                 'extra' => [
                     'length' => 255,

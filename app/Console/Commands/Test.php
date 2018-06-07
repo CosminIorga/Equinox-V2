@@ -70,7 +70,7 @@ class Test extends Command
         $values = [];
 
         foreach (range(0, 10000 - 1) as $index) {
-            $index = rand(0, 3);
+            $index = rand(0, 1);
 
             $set = [
                 'client' => "'A" . rand(0, 10) . "'",
@@ -78,8 +78,8 @@ class Test extends Command
                 'destination' => "'C" . rand(0, 10) . "'",
                 "int0" => (int) ($index == 0),
                 "int1" => (int) ($index == 1),
-                "int2" => (int) ($index == 2),
-                "int3" => (int) ($index == 3),
+//                "int2" => (int) ($index == 2),
+//                "int3" => (int) ($index == 3),
             ];
 
             array_unshift($set, "'" . md5($set['client'] . "_" . $set['carrier'] . "_" . $set['destination']) . "'");
@@ -89,12 +89,10 @@ class Test extends Command
 
         $values = implode(', ' . PHP_EOL, $values);
 
-        $query = "INSERT INTO Daily_2018_04_30_Agg_interval_cost 
-            (hash_id, client, carrier, destination, interval_0, interval_1, interval_2, interval_3) VALUES $values
+        $query = "INSERT INTO Daily_2018_05_30_Agg_interval_cost 
+            (hash_id, client_x, carrier_x, destination_x, interval_0, interval_1) VALUES $values
             ON DUPLICATE KEY UPDATE interval_0 = interval_0 + IFNULL(VALUES(interval_0), 0)
             , interval_1 = interval_1 + IFNULL(VALUES(interval_1), 0)
-            , interval_2 = interval_2 + IFNULL(VALUES(interval_2), 0)
-            , interval_3 = interval_3 + IFNULL(VALUES(interval_3), 0)
 ";
 
         /* Start timer for performance benchmarks */
@@ -113,10 +111,10 @@ class Test extends Command
     {
         $data = [];
 
-        foreach (range(0, 5000) as $index) {
+        foreach (range(0, 3) as $index) {
             $data[] = [
                 'id' => $index,
-                'start_date' => '2018-05-0' . ($index % 5),
+                'start_date' => '2018-05-0' . ($index % 3) .  ' ' . rand(1, 23) . ':00:00',
                 'client' => "CL_a",
                 "carrier" => "CR_a",
                 "destination" => "D_a",

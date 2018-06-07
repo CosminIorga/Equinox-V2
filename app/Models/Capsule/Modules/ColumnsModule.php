@@ -9,7 +9,9 @@
 namespace Equinox\Models\Capsule\Modules;
 
 
+use Equinox\Definitions\ColumnsDefinitions;
 use Equinox\Factories\ColumnFactory;
+use Equinox\Services\General\Config;
 use Illuminate\Support\Collection;
 
 trait ColumnsModule
@@ -18,6 +20,11 @@ trait ColumnsModule
      * @var Collection
      */
     protected $columns;
+
+    /**
+     * @var Config
+     */
+    protected $config;
 
     /**
      * @return self
@@ -47,9 +54,9 @@ trait ColumnsModule
      */
     protected function computeHashColumn(): self
     {
-        $hashConfig = config('capsule.columns.hash_column');
+        $hashConfig = $this->config->get('capsule.columns.hash_column');
 
-        return $this->buildAndStoreColumn('hash', $hashConfig);
+        return $this->buildAndStoreColumn(ColumnsDefinitions::HASH_COLUMN, $hashConfig);
     }
 
     /**
@@ -58,10 +65,10 @@ trait ColumnsModule
      */
     protected function computePivotColumns(): self
     {
-        $pivotsConfig = config('capsule.columns.pivot_columns');
+        $pivotsConfig = $this->config->get('capsule.columns.pivot_columns');
 
         foreach ($pivotsConfig as $pivotConfig) {
-            $this->buildAndStoreColumn('pivot', $pivotConfig);
+            $this->buildAndStoreColumn(ColumnsDefinitions::PIVOT_COLUMN, $pivotConfig);
         }
 
         return $this;
@@ -73,15 +80,26 @@ trait ColumnsModule
      */
     protected function computeIntervalColumns(): self
     {
-        $intervalConfig = config('capsule.columns.interval_column_template');
+        $intervalConfig = $this->config->get('capsule.columns.interval_column_template');
 
         foreach (range(0, $this->intervalColumnsCount - 1) as $columnIndex) {
-            $intervalConfig['name'] = preg_replace('/:index:/', $columnIndex, $intervalConfig['pattern']);
+            $intervalConfig['name'] = $this->computeIntervalColumnName($columnIndex, $intervalConfig['pattern']);
 
-            $this->buildAndStoreColumn('interval', $intervalConfig);
+            $this->buildAndStoreColumn(ColumnsDefinitions::INTERVAL_COLUMN, $intervalConfig);
         }
 
         return $this;
+    }
+
+    /**
+     * Short function used to compute interval column name
+     * @param int $columnIndex
+     * @param string $patternName
+     * @return string
+     */
+    protected function computeIntervalColumnName(int $columnIndex, string $patternName): string
+    {
+        return preg_replace('/:index:/', $columnIndex, $patternName);
     }
 
     /**
