@@ -111,10 +111,10 @@ class Test extends Command
     {
         $data = [];
 
-        foreach (range(0, 3) as $index) {
+        foreach (range(0, 5000 - 1) as $index) {
             $data[] = [
                 'id' => $index,
-                'start_date' => '2018-05-0' . ($index % 3) .  ' ' . rand(1, 23) . ':00:00',
+                'start_date' => '2018-06-15 ' . rand(0, 23) . ':00:00',
                 'client' => "CL_a",
                 "carrier" => "CR_a",
                 "destination" => "D_a",

@@ -9,8 +9,6 @@
 namespace Equinox\Repositories;
 
 
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CapsuleRepository extends DefaultRepository
@@ -23,17 +21,6 @@ class CapsuleRepository extends DefaultRepository
     public function createCapsuleFromClosure(string $capsuleName, \Closure $capsuleGeneratorClosure)
     {
         Schema::create($capsuleName, $capsuleGeneratorClosure);
-    }
-
-    /**
-     * Function used to create a new storage trigger given the trigger generator function
-     * @param \Closure $storageTriggerClosure
-     */
-    public function createTriggerFromClosure(\Closure $storageTriggerClosure)
-    {
-        $triggerSyntax = $storageTriggerClosure();
-
-        DB::unprepared($triggerSyntax);
     }
 
     /**

@@ -29,8 +29,8 @@ trait RecordsModule
      */
     public function extractRecord(): Record
     {
-        if (! is_null($this->record)) {
-            return clone $this->record;
+        if (!is_null($this->record)) {
+            return $this->record;
         }
 
         $this->initNewRecord()

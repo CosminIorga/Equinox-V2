@@ -11,6 +11,7 @@ namespace Equinox\Services\Data;
 
 use Equinox\Models\Capsule\Capsule;
 use Equinox\Models\Capsule\Record;
+use Equinox\Repositories\DataRepository;
 use Equinox\Services\General\BaseService;
 use Equinox\Services\General\Config;
 use Equinox\Services\General\DebuggingService;
@@ -22,47 +23,57 @@ use Equinox\Services\General\LoggerService;
  */
 class DataModifyService extends BaseService
 {
+    /**
+     * The data repository
+     * @var DataRepository
+     */
+    protected $dataRepository;
 
     /**
      * DataModifyService constructor.
      * @param LoggerService $loggerGenerateService
      * @param DebuggingService $debuggingService
      * @param Config $config
+     * @param DataRepository $dataRepository
      */
     public function __construct(
         LoggerService $loggerGenerateService,
         DebuggingService $debuggingService,
-        Config $config
+        Config $config,
+        DataRepository $dataRepository
     ) {
         parent::__construct($loggerGenerateService, $debuggingService, $config);
-    }
 
+        $this->dataRepository = $dataRepository;
+    }
 
 
     public function modifyRecords(array $mapping): self
     {
-
         foreach ($mapping as $capsuleName => $mapData) {
-            $parsedRecords = [];
+            $parsedRecords = collect();
 
             /** @var Capsule $capsule */
             $capsule = $mapData['capsule'];
             /** @var array $capsuleRecords */
             $capsuleRecords = $mapData['records'];
 
-            dump($capsule->toArray());
-            dump($capsuleRecords);
-
+            $startTime = $this->debuggingService->startTimer();
             foreach ($capsuleRecords as $record) {
-                $recordStructure = $capsule->extractRecord();
+                $recordStructure = clone $capsule->extractRecord();
 
                 $this->computeDataRecord($record, $recordStructure, $capsule);
 
-                $parsedRecords[] = $recordStructure;
+                $parsedRecords->push($recordStructure);
             }
 
-            dump($parsedRecords);
+            $elapsed = $this->debuggingService->endTimer($startTime);
+
+            echo $this->debuggingService->dumpTimerMessage($elapsed) . PHP_EOL;
+
+            $this->dataRepository->modifyCapsuleData($capsule, $parsedRecords);
         }
+
 
         return $this;
     }
@@ -79,9 +90,6 @@ class DataModifyService extends BaseService
         $this->setHashValue($record, $recordStructure)
             ->setPivotValues($record, $recordStructure)
             ->setIntervalValues($record, $recordStructure, $capsule);
-
-        dump($record);
-        dump($recordStructure->toArray());
 
         return [];
     }

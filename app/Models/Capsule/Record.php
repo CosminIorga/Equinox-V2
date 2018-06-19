@@ -10,7 +10,13 @@ namespace Equinox\Models\Capsule;
 
 
 use Equinox\Models\NonPersistentModel;
+use Illuminate\Support\Collection;
 
+/**
+ * Class Record
+ * @package Equinox\Models\Capsule
+ * @property Collection $intervalKeys
+ */
 class Record extends NonPersistentModel
 {
 
@@ -102,6 +108,33 @@ class Record extends NonPersistentModel
         }
 
         return $this;
+    }
+
+    /**
+     * Getter for intervalKeys
+     * @return Collection
+     */
+    public function getIntervalKeysAttribute(): Collection
+    {
+        return collect(array_keys($this->data['intervals']));
+    }
+
+    /**
+     * Function used to extract keys
+     * @return Collection
+     */
+    public function extractKeys(): Collection
+    {
+        return collect($this->toArray())->keys();
+    }
+
+    /**
+     * Function used to extract values
+     * @return Collection
+     */
+    public function extractValues(): Collection
+    {
+        return collect($this->toArray())->values();
     }
 
     /**
