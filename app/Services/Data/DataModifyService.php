@@ -9,6 +9,7 @@
 namespace Equinox\Services\Data;
 
 
+use Equinox\Exceptions\DataException;
 use Equinox\Models\Capsule\Capsule;
 use Equinox\Models\Capsule\Record;
 use Equinox\Repositories\DataRepository;
@@ -47,8 +48,32 @@ class DataModifyService extends BaseService
         $this->dataRepository = $dataRepository;
     }
 
-
+    /**
+     * Function used to modify records given data mapping
+     * @param array $mapping
+     * @return DataModifyService
+     */
     public function modifyRecords(array $mapping): self
+    {
+        try {
+            $this->dataRepository->startDataTransaction();
+
+            $this->iterateOverMapping($mapping);
+
+            $this->dataRepository->endDataTransaction();
+        } catch (\Exception $exception) {
+            $this->dataRepository->rollbackDataTransaction();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Function used to iterate over given data mapping
+     * @param array $mapping
+     * @throws DataException
+     */
+    protected function iterateOverMapping(array $mapping)
     {
         foreach ($mapping as $capsuleName => $mapData) {
             $parsedRecords = collect();
@@ -71,11 +96,12 @@ class DataModifyService extends BaseService
 
             echo $this->debuggingService->dumpTimerMessage($elapsed) . PHP_EOL;
 
-            $this->dataRepository->modifyCapsuleData($capsule, $parsedRecords);
+            $result = $this->dataRepository->modifyCapsuleData($capsule, $parsedRecords);
+
+            if ($result !== true) {
+                throw new DataException($result);
+            }
         }
-
-
-        return $this;
     }
 
     /**

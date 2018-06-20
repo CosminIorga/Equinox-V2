@@ -9,6 +9,7 @@
 namespace Equinox\Repositories;
 
 
+use Equinox\Exceptions\DataException;
 use Equinox\Models\Capsule\Capsule;
 use Equinox\Models\Capsule\Record;
 use Illuminate\Support\Collection;
@@ -26,6 +27,7 @@ class DataRepository extends DefaultRepository
      * Function used to modify Capsule data given list of records
      * @param Capsule $capsule
      * @param Collection $records
+     * @return bool
      */
     public function modifyCapsuleData(Capsule $capsule, Collection $records)
     {
@@ -39,13 +41,12 @@ class DataRepository extends DefaultRepository
         });
         $clause = $firstRecord->intervalKeys;
 
-        $response = $this->insertOnDuplicateKey(
+        return $this->insertOnDuplicateKey(
             $tableName,
             $columns,
             $values,
             $clause
         );
-        dump($response);
     }
 
     /**
