@@ -40,7 +40,7 @@ class DataModify implements ShouldQueue
     public function handle(RequestDataModify $event)
     {
         try {
-            $this->dataModifyService->modifyRecords($event->getMapping());
+            $this->dataModifyService->modifyRecords($event->getMappedData());
         } catch (\Exception $exception) {
             dump($exception->getMessage());
         }

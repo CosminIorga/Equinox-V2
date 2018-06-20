@@ -99,6 +99,7 @@ class Capsule extends NonPersistentModel
      * @param Config $config
      * @param ColumnFactory $columnFactory
      * @param RecordFactory $recordFactory
+     * @throws ModelException
      */
     public function __construct(
         string $capsuleElasticity,
@@ -124,6 +125,7 @@ class Capsule extends NonPersistentModel
 
     /**
      * Bootstrap Capsule by computing columns etc
+     * @throws ModelException
      */
     protected function bootstrap()
     {

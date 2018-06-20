@@ -66,6 +66,7 @@ class CapsuleFactory
      * @param Carbon $referenceDate
      * @param string $aggregateName
      * @return Capsule
+     * @throws \Equinox\Exceptions\ModelException
      */
     public function build(
         string $capsuleElasticity,

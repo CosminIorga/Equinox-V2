@@ -50,33 +50,13 @@ class DataModifyService extends BaseService
 
     /**
      * Function used to modify records given data mapping
-     * @param array $mapping
+     * @param array $mapData
      * @return DataModifyService
      */
-    public function modifyRecords(array $mapping): self
+    public function modifyRecords(array $mapData): self
     {
         try {
             $this->dataRepository->startDataTransaction();
-
-            $this->iterateOverMapping($mapping);
-
-            $this->dataRepository->endDataTransaction();
-        } catch (\Exception $exception) {
-            $this->dataRepository->rollbackDataTransaction();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Function used to iterate over given data mapping
-     * @param array $mapping
-     * @throws DataException
-     */
-    protected function iterateOverMapping(array $mapping)
-    {
-        foreach ($mapping as $capsuleName => $mapData) {
-            $parsedRecords = collect();
 
             /** @var Capsule $capsule */
             $capsule = $mapData['capsule'];
@@ -84,12 +64,16 @@ class DataModifyService extends BaseService
             $capsuleRecords = $mapData['records'];
 
             $startTime = $this->debuggingService->startTimer();
+
+            $parsedRecords = collect();
+            $recordStructure = $capsule->extractRecord();
+
             foreach ($capsuleRecords as $record) {
-                $recordStructure = clone $capsule->extractRecord();
+                $currentRecordStructure = clone $recordStructure;
 
-                $this->computeDataRecord($record, $recordStructure, $capsule);
+                $this->computeDataRecord($record, $currentRecordStructure, $capsule);
 
-                $parsedRecords->push($recordStructure);
+                $parsedRecords->push($currentRecordStructure);
             }
 
             $elapsed = $this->debuggingService->endTimer($startTime);
@@ -101,7 +85,18 @@ class DataModifyService extends BaseService
             if ($result !== true) {
                 throw new DataException($result);
             }
+
+            $this->dataRepository->endDataTransaction();
+        } catch (\Exception $exception) {
+            $this->dataRepository->rollbackDataTransaction();
         }
+
+        /* Start timer for performance benchmarks */
+        $startTime = microtime(true);
+
+        dump($startTime);
+
+        return $this;
     }
 
     /**

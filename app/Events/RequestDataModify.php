@@ -12,18 +12,18 @@ class RequestDataModify
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * The array containing data to modify
+     * The mapped data
      * @var array
      */
-    protected $mapping;
+    protected $mapData;
 
     /**
      * Create a new event instance.
-     * @param array $mapping
+     * @param array $mapData
      */
-    public function __construct(array $mapping)
+    public function __construct(array $mapData)
     {
-        $this->mapping = $mapping;
+        $this->mapData = $mapData;
     }
 
     /**
@@ -40,9 +40,8 @@ class RequestDataModify
      * Mapping getter
      * @return array
      */
-    public function getMapping(): array
+    public function getMappedData(): array
     {
-        return $this->mapping;
+        return $this->mapData;
     }
-
 }

@@ -9,7 +9,6 @@
 namespace Equinox\Repositories;
 
 
-use Equinox\Exceptions\DataException;
 use Equinox\Models\Capsule\Capsule;
 use Equinox\Models\Capsule\Record;
 use Illuminate\Support\Collection;

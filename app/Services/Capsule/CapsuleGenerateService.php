@@ -62,6 +62,7 @@ class CapsuleGenerateService extends BaseService
      * Function used to create all defined capsules given reference date
      * @param Carbon $referenceDate
      * @return array
+     * @throws \Equinox\Exceptions\ModelException
      */
     public function createCapsulesByReferenceDate(Carbon $referenceDate): array
     {
@@ -96,6 +97,7 @@ class CapsuleGenerateService extends BaseService
      * @param array $aggregateConfig
      * @param Carbon $referenceDate
      * @return Capsule
+     * @throws \Equinox\Exceptions\ModelException
      */
     public function createOneCapsule(
         array $capsuleConfig,

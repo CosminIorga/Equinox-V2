@@ -59,6 +59,7 @@ class DataMapService extends BaseService
      * Function used to group given records to a specific Capsule and return the grouped information
      * @param array $data
      * @return array
+     * @throws \Equinox\Exceptions\ModelException
      */
     public function groupRecordsByDefinedCapsules(array $data): array
     {

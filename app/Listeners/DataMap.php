@@ -44,7 +44,9 @@ class DataMap implements ShouldQueue
         try {
             $mapping = $this->dataMapService->groupRecordsByDefinedCapsules($event->getData());
 
-            event(new RequestDataModify($mapping));
+            foreach ($mapping as $mapData) {
+                event(new RequestDataModify($mapData));
+            }
         } catch (\Exception $exception) {
             dump($exception->getMessage());
         }
