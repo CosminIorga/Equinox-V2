@@ -32,10 +32,9 @@ class CapsuleGenerate implements ShouldQueue
     }
 
     /**
-     * Handle the event.
-     *
-     * @param  RequestCapsuleGenerate $event
-     * @return void
+     * Handle the event
+     * @param RequestCapsuleGenerate $event
+     * @throws \Equinox\Exceptions\ModelException
      */
     public function handle(RequestCapsuleGenerate $event)
     {

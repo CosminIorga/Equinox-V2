@@ -53,9 +53,10 @@ class CapsuleFactory
         ColumnFactory $columnFactory,
         RecordFactory $recordFactory
     ) {
-        $this->columnFactory = $columnFactory;
         $this->cache = $cache;
         $this->config = $config;
+
+        $this->columnFactory = $columnFactory;
         $this->recordFactory = $recordFactory;
     }
 

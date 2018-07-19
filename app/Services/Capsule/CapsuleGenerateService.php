@@ -11,7 +11,6 @@ namespace Equinox\Services\Capsule;
 use Carbon\Carbon;
 use Equinox\Definitions\LoggerDefinitions;
 use Equinox\Factories\CapsuleFactory;
-use Equinox\Models\Capsule\Capsule;
 use Equinox\Repositories\CapsuleRepository;
 use Equinox\Services\General\BaseService;
 use Equinox\Services\General\Config;
@@ -75,10 +74,11 @@ class CapsuleGenerateService extends BaseService
 
         foreach ($capsulesConfig as $capsuleConfig) {
             foreach ($aggregatesConfig as $aggregateConfig) {
-                $capsule = $this->createOneCapsule(
-                    $capsuleConfig,
-                    $aggregateConfig,
-                    $referenceDate
+                $capsule = $this->capsuleFactory->build(
+                    $capsuleConfig['capsule_elasticity'],
+                    $capsuleConfig['interval_elasticity'],
+                    $referenceDate,
+                    $aggregateConfig['output_name']
                 );
 
                 $capsules[] = $capsule;
@@ -89,27 +89,6 @@ class CapsuleGenerateService extends BaseService
         $this->loggerService->debugTimer($elapsed, "Create capsule");
 
         return $capsules;
-    }
-
-    /**
-     * Short function used to build a capsule
-     * @param array $capsuleConfig
-     * @param array $aggregateConfig
-     * @param Carbon $referenceDate
-     * @return Capsule
-     * @throws \Equinox\Exceptions\ModelException
-     */
-    public function createOneCapsule(
-        array $capsuleConfig,
-        array $aggregateConfig,
-        Carbon $referenceDate
-    ): Capsule {
-        return $this->capsuleFactory->build(
-            $capsuleConfig['capsule_elasticity'],
-            $capsuleConfig['interval_elasticity'],
-            $referenceDate,
-            $aggregateConfig['output_name']
-        );
     }
 
     /**

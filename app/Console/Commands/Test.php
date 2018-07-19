@@ -7,6 +7,9 @@ use Equinox\Events\RequestCapsuleGenerate;
 use Equinox\Events\RequestDataMap;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Thumper\RpcClient;
+use Thumper\RpcServer;
+
 
 class Test extends Command
 {
@@ -25,15 +28,31 @@ class Test extends Command
     protected $description = 'Command description';
 
     /**
-     * Test constructor.
+     * @var RpcServer
      */
-    public function __construct()
-    {
+    private $rpcServer;
+    /**
+     * @var RpcClient
+     */
+    private $rpcClient;
+
+    /**
+     * Test constructor.
+     * @param RpcServer $rpcServer
+     * @param RpcClient $rpcClient
+     */
+    public function __construct(
+        RpcServer $rpcServer,
+        RpcClient $rpcClient
+    ) {
         parent::__construct();
+
+        $this->rpcServer = $rpcServer;
+        $this->rpcClient = $rpcClient;
     }
 
     /**
-     * Command runner
+     * @throws \Exception
      */
     public function handle()
     {
@@ -43,6 +62,15 @@ class Test extends Command
                 break;
             case "insert":
                 $this->testInsertRep();
+                break;
+            case "parallel-server":
+                $this->testParallelServer();
+                break;
+            case "parallel-client":
+                $this->testParallelClient();
+                break;
+            case "fetch":
+                $this->testFetchData();
                 break;
             default:
                 throw new \Exception("unknown argument");
@@ -111,7 +139,7 @@ class Test extends Command
     {
         $data = [];
 
-        foreach (range(0, 5000 - 1) as $index) {
+        foreach (range(0, 10000 - 1) as $index) {
             $data[] = [
                 'id' => $index,
                 'start_date' => '2018-06-15 ' . rand(0, 23) . ':00:00',
@@ -126,6 +154,8 @@ class Test extends Command
         /* Start timer for performance benchmarks */
         $startTime = microtime(true);
 
+        dump($startTime);
+
         event(new RequestDataMap($data));
 
         /* Compute total operations time */
@@ -133,6 +163,52 @@ class Test extends Command
         $elapsed = $endTime - $startTime;
 
         echo "Elapsed: $elapsed" . PHP_EOL;
+    }
+
+    protected function testParallelClient()
+    {
+        $client = $this->rpcClient;
+
+        $client->initClient();
+        $client->addRequest("Hello world", 'charcount', 'charcount1');
+        $client->addRequest("Hello world 23", 'charcount', 'charcount2');
+
+        /* Start timer for performance benchmarks */
+        $startTime = microtime(true);
+
+        echo "Waiting for replies…\n";
+        $replies = $client->getReplies();
+
+
+        /* Compute total operations time */
+        $endTime = microtime(true);
+        $elapsed = $endTime - $startTime;
+
+        echo $elapsed;
+        var_dump($replies);
+    }
+
+    protected function testParallelServer()
+    {
+        $charCount = function ($word) {
+            echo "Doing stuff now";
+            sleep(2);
+
+            return strlen($word);
+        };
+
+        $server = $this->rpcServer;
+
+        $server->initServer('charcount');
+
+        $server->setCallback($charCount);
+
+        $server->start();
+    }
+
+    protected function testFetchData()
+    {
+
     }
 
 }

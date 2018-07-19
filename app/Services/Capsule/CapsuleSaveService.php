@@ -9,7 +9,6 @@
 namespace Equinox\Services\Capsule;
 
 use Equinox\Definitions\LoggerDefinitions;
-use Equinox\Factories\CapsuleFactory;
 use Equinox\Models\Capsule\Capsule;
 use Equinox\Models\Capsule\Column;
 use Equinox\Repositories\CapsuleRepository;
@@ -29,12 +28,6 @@ use Illuminate\Support\Facades\DB;
 class CapsuleSaveService extends BaseService
 {
     /**
-     * The capsule factory
-     * @var CapsuleFactory
-     */
-    protected $capsuleFactory;
-
-    /**
      * The capsule repository
      * @var CapsuleRepository
      */
@@ -42,14 +35,12 @@ class CapsuleSaveService extends BaseService
 
     /**
      * CapsuleService constructor.
-     * @param CapsuleFactory $capsuleGenerateFactory
      * @param CapsuleRepository $capsuleRepository
      * @param LoggerService $loggerService
      * @param DebuggingService $debuggingService
      * @param Config $config
      */
     public function __construct(
-        CapsuleFactory $capsuleGenerateFactory,
         CapsuleRepository $capsuleRepository,
         LoggerService $loggerService,
         DebuggingService $debuggingService,
@@ -57,7 +48,6 @@ class CapsuleSaveService extends BaseService
     ) {
         parent::__construct($loggerService, $debuggingService, $config);
 
-        $this->capsuleFactory = $capsuleGenerateFactory;
         $this->capsuleRepository = $capsuleRepository;
     }
 

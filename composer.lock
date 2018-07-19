@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d693e0264799ea556839ed804e699a56",
+    "content-hash": "3c754d1a1bca479087b8ed5f3c7f0bf9",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1150,6 +1150,58 @@
                 "rabbitmq"
             ],
             "time": "2018-02-11T19:28:00+00:00"
+        },
+        {
+            "name": "php-amqplib/thumper",
+            "version": "v0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-amqplib/Thumper.git",
+                "reference": "71de0d0722ea6f6cd37361a9785f6e51b296136e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-amqplib/Thumper/zipball/71de0d0722ea6f6cd37361a9785f6e51b296136e",
+                "reference": "71de0d0722ea6f6cd37361a9785f6e51b296136e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.3|^7.0",
+                "php-amqplib/php-amqplib": "^2.6"
+            },
+            "replace": {
+                "videlalvaro/thumper": "self.version"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8",
+                "scrutinizer/ocular": "^1.2",
+                "squizlabs/php_codesniffer": "^2.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.5.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Thumper": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "AMQP Tools",
+            "homepage": "https://github.com/php-amqplib/Thumper",
+            "keywords": [
+                "AMQP",
+                "PHPAMQPLib",
+                "Thumper",
+                "library",
+                "rabbitmq"
+            ],
+            "time": "2016-05-27T15:47:28+00:00"
         },
         {
             "name": "psr/container",

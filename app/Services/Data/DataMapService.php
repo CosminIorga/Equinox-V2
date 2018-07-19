@@ -11,9 +11,9 @@ namespace Equinox\Services\Repositories;
 
 use Carbon\Carbon;
 use Equinox\Definitions\LoggerDefinitions;
+use Equinox\Factories\CapsuleFactory;
 use Equinox\Models\Capsule\Capsule;
 use Equinox\Repositories\DataRepository;
-use Equinox\Services\Capsule\CapsuleGenerateService;
 use Equinox\Services\General\BaseService;
 use Equinox\Services\General\Config;
 use Equinox\Services\General\DebuggingService;
@@ -29,21 +29,21 @@ class DataMapService extends BaseService
     protected $dataRepository;
 
     /**
-     * The capsule service
-     * @var CapsuleGenerateService
+     * The Capsule Factory
+     * @var CapsuleFactory
      */
-    protected $capsuleGenerateService;
+    protected $capsuleFactory;
 
     /**
      * DataService constructor.
-     * @param CapsuleGenerateService $capsuleGenerateService
+     * @param CapsuleFactory $capsuleFactory
      * @param DataRepository $dataRepository
      * @param LoggerService $loggerService
      * @param DebuggingService $debuggingService
      * @param Config $config
      */
     public function __construct(
-        CapsuleGenerateService $capsuleGenerateService,
+        CapsuleFactory $capsuleFactory,
         DataRepository $dataRepository,
         LoggerService $loggerService,
         DebuggingService $debuggingService,
@@ -52,7 +52,8 @@ class DataMapService extends BaseService
         parent::__construct($loggerService, $debuggingService, $config);
 
         $this->dataRepository = $dataRepository;
-        $this->capsuleGenerateService = $capsuleGenerateService;
+
+        $this->capsuleFactory = $capsuleFactory;
     }
 
     /**
@@ -89,9 +90,7 @@ class DataMapService extends BaseService
                     $this->mapAndGroupRecord(
                         $uniqueCapsuleID,
                         $definedCapsuleConfig,
-                        [
-                            'output_name' => $recordAggregateName,
-                        ],
+                        $recordAggregateName,
                         $dataToMap,
                         $mapping
                     );
@@ -185,23 +184,25 @@ class DataMapService extends BaseService
      * Function used to group record to a specific Capsule
      * @param string $uniqueCapsuleID
      * @param array $definedCapsuleConfig
-     * @param array $aggregatesConfig
+     * @param string $recordAggregateName
      * @param array $recordComponents
      * @param array $mapping
      * @return DataMapService
+     * @throws \Equinox\Exceptions\ModelException
      */
     protected function mapAndGroupRecord(
         string $uniqueCapsuleID,
         array $definedCapsuleConfig,
-        array $aggregatesConfig,
+        string $recordAggregateName,
         array $recordComponents,
         array &$mapping
     ): self {
         if (! array_key_exists($uniqueCapsuleID, $mapping)) {
-            $mapping[$uniqueCapsuleID]['capsule'] = $this->capsuleGenerateService->createOneCapsule(
-                $definedCapsuleConfig,
-                $aggregatesConfig,
-                $recordComponents['timestamp_key']
+            $mapping[$uniqueCapsuleID]['capsule'] = $this->capsuleFactory->build(
+                $definedCapsuleConfig['capsule_elasticity'],
+                $definedCapsuleConfig['interval_elasticity'],
+                $recordComponents['timestamp_key'],
+                $recordAggregateName
             );
         }
 

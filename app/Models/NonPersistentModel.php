@@ -31,7 +31,7 @@ abstract class NonPersistentModel implements Arrayable, Jsonable
      */
     public function getAttribute(string $key)
     {
-        $value = $this->$key ?? null;;
+        $value = $this->$key ?? null;
 
         if ($this->hasGetMutator($key)) {
             $method = $this->createGetMutator($key);

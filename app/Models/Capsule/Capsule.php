@@ -73,6 +73,12 @@ class Capsule extends NonPersistentModel
     protected $baseReferenceDate;
 
     /**
+     * Capsule options used to perform or skip various operations
+     * @var CapsuleOptions
+     */
+    protected $options;
+
+    /**
      * The column factory
      * @var ColumnFactory
      */
@@ -185,7 +191,7 @@ class Capsule extends NonPersistentModel
      */
     protected function computeIntervalColumnsCount(): self
     {
-        //TODO: implement fast algorithm that determines number of intervals based on interval and capsule elasticities
+        //TODO: implement algorithm that determines number of intervals based on interval and capsule elasticities
 
         switch ($this->capsuleElasticity) {
             case "daily":
